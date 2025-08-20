@@ -4,7 +4,10 @@ import com.one.entities.Otp;
 import com.one.entities.User;
 import com.one.repositories.OtpRepository;
 import com.one.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -12,9 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    @Value("${otp.cleanup.expiryMillis:60000}")
+    private long expiryMillis;
 
     @Autowired
     private UserRepository userRepository;
@@ -24,9 +34,6 @@ public class UserService {
 
     public void register(String mobile) {
         String cleanedMobile = cleanMobile(mobile);
-//        if (userRepository.existsByMobile(cleanedMobile)) {
-//            throw new RuntimeException("Mobile number already registered");
-//        }
         User user = new User();
         user.setMobile(cleanedMobile);
         userRepository.save(user);
@@ -34,17 +41,12 @@ public class UserService {
 
 
     public void saveOtp(String mobile, String otp) {
-        String cleanedMobile = cleanMobile(mobile);
-
-        User user = userRepository.findByMobile(cleanedMobile)
-                .orElseGet(() -> userRepository.save(new User(cleanedMobile)));
-
-        Otp newOtp = new Otp(user, otp, LocalDateTime.now());
+        Otp newOtp = new Otp(cleanMobile(mobile), otp, LocalDateTime.now());
         otpRepository.save(newOtp);
     }
 
     public List<Otp> getOtps(String mobile) {
-        return otpRepository.findByUserMobile(cleanMobile(mobile));
+        return otpRepository.findByMobile(cleanMobile(mobile));
     }
 
     private String cleanMobile(String mobile) {
@@ -58,17 +60,40 @@ public class UserService {
         return mobile;
     }
 
-    public ResponseEntity<String> getLatestOtp(String mobile) {
-        return otpRepository.findTopByUserMobileOrderByTimestampDesc(mobile).map(otp -> ResponseEntity.ok(otp.getOtp()))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<List<String>> getLatestOtp(String mobile) {
+        return ResponseEntity.ok(otpRepository.findAllByMobileOrderByTimestampDesc(mobile).stream()
+                .map(Otp::getOtp).toList());
     }
 
-    // Clean expired OTPs
     @Transactional
-    @Scheduled(fixedRateString = "${otp.cleanup.fixedRate:120000}")
-    public void cleanupExpiredOtps() {
-        System.out.println("Clear OTP is triggered");
-        otpRepository.deleteExpired(LocalDateTime.now().minusMinutes(2));
+    @Scheduled(fixedRateString = "${otp.cleanup.fixedRate:60000}")
+    public void scheduleToClearOtp() {
+        cleanupExpiredOtps();
     }
+
+    public void cleanupExpiredOtps() {
+        log.info("Started OTP clearing");
+        LocalDateTime cutoff = LocalDateTime.now()
+                .minusNanos(expiryMillis * 1_000_000);
+        otpRepository.deleteExpired(cutoff);
+        log.info("OTPs older than {} ms are cleared", expiryMillis);
+    }
+
+    @Transactional
+    public void clearAllOtps() {
+        log.info("Clearing All Otp's");
+        otpRepository.deleteAll();
+        log.info("All the Otp's are cleared");
+    }
+
+    public Map<String, List<String>> getOtpStringsGroupedByMobile() {
+        List<Otp> otps = otpRepository.findAllOrderByMobileAndTimestampDesc();
+        return otps.stream()
+                .collect(Collectors.groupingBy(
+                        Otp::getMobile,
+                        Collectors.mapping(Otp::getOtp, Collectors.toList())
+                ));
+    }
+
 }
 

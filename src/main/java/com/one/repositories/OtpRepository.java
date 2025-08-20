@@ -9,15 +9,18 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
-    List<Otp> findByUserMobile(String mobile);
-    Optional<Otp> findTopByUserMobileOrderByTimestampDesc(String phoneNumber);
+    public List<Otp> findByMobile(String mobile);
+    public List<Otp> findAllByMobileOrderByTimestampDesc(String phoneNumber);
 
     @Modifying
     @Query("DELETE FROM Otp o WHERE o.timestamp < :cutoff")
     void deleteExpired(@Param("cutoff") LocalDateTime cutoff);
+
+    @Query("SELECT o FROM Otp o ORDER BY o.mobile, o.timestamp DESC")
+    List<Otp> findAllOrderByMobileAndTimestampDesc();
+
 }
 

@@ -2,7 +2,6 @@ package com.one.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.one.configs.LocalDateTimeFromEpochDeserializer;
-import com.one.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.ToString;
@@ -22,7 +21,11 @@ public class OtpRequest {
     private String sender;
     private String smsBody;
 
-    public void setPhoneNumber(@NotBlank String mobile) {
+    public @NotBlank String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(@NotBlank String mobile) {
         this.mobile = mobile;
     }
 
@@ -64,13 +67,5 @@ public class OtpRequest {
 
     public void setSmsBody(String smsBody) {
         this.smsBody = smsBody;
-    }
-
-    public @NotBlank String getMobile() {
-        return Utils.normalizeMobile(mobile);
-    }
-
-    public void setMobile(@NotBlank String mobile) {
-        this.mobile = Utils.normalizeMobile(mobile);
     }
 }

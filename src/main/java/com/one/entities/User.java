@@ -1,11 +1,7 @@
 package com.one.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -15,11 +11,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String mobile; // 10-digit only
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Otp> otps = new ArrayList<>();
-
+    private String mobile;
     public User(String cleanedMobile) {
         this.mobile = cleanedMobile;
     }
@@ -41,14 +33,6 @@ public class User {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public List<Otp> getOtps() {
-        return otps;
-    }
-
-    public void setOtps(List<Otp> otps) {
-        this.otps = otps;
     }
 
 }

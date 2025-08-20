@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/otp/latest/{mobile}")
-    public ResponseEntity<?> getLatestOtp(@PathVariable String mobile) {
+    public ResponseEntity<List<String>> getLatestOtp(@PathVariable String mobile) {
         return userService.getLatestOtp(mobile);
     }
 
@@ -47,6 +47,17 @@ public class UserController {
     public ResponseEntity<String> extractText(@RequestBody Map<String, String> body) throws IOException {
         String base64 = body.get("image");
         return ResponseEntity.ok(OcrUtils.extractTextFromBase64(base64));
+    }
+
+    @GetMapping("/otp/clear")
+    public ResponseEntity<String> clear() {
+        userService.clearAllOtps();
+        return ResponseEntity.ok("OTPs are cleared");
+    }
+
+    @GetMapping("/otp/read-all")
+    public ResponseEntity<Map<String, List<String>>> readAll() {
+        return ResponseEntity.ok(userService.getOtpStringsGroupedByMobile());
     }
 }
 

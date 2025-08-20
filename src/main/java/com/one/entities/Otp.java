@@ -14,14 +14,10 @@ public class Otp {
     private Long id;
     private String otp;
     private LocalDateTime timestamp;
+    private String mobile;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonBackReference
-    private User user;
-
-    public Otp(User user, String otp, LocalDateTime now) {
-        this.user = user;
+    public Otp(String mobile, String otp, LocalDateTime now) {
+        this.mobile = mobile;
         this.otp = otp;
         this.timestamp=now;
     }
@@ -50,19 +46,9 @@ public class Otp {
         this.timestamp = timestamp;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Otp(){
 
     }
-
-
     public boolean isExpired() {
         return timestamp.plusMinutes(2).isBefore(LocalDateTime.now());
     }

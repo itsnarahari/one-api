@@ -15,7 +15,7 @@ cloudflared tunnel route dns hariworks-tunnel dev.hariworks.in
 
 cloudflared tunnel run hariworks-tunnel
 
-java -jar one-api-0.0.1-SNAPSHOT --otp.cleanup.fixedRate=180000 --server.port=8080
+java -jar one-api.jar --otp.cleanup.fixedRate=180000 --otp.cleanup.expiryMillis=30000 --server.port=8080
 
 URL: https://dev.hariworks.in/swagger-ui/index.html
 
