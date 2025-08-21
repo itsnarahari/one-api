@@ -43,10 +43,11 @@
 			<artifactId>jakarta.validation-api</artifactId>
 			<version>3.0.2</version> <!-- Latest stable as of 2025 -->
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.tess4j/tess4j -->
 		<dependency>
 			<groupId>net.sourceforge.tess4j</groupId>
 			<artifactId>tess4j</artifactId>
-			<version>5.4.0</version>
+			<version>5.16.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>

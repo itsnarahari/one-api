@@ -33,3 +33,13 @@ ingress:
 cloudflared tunnel route dns reader-tunnel reader.hariworks.in
 
 cloudflared tunnel run reader-tunnel
+
+MACOS:
+
+tunnel: reader-tunnel
+credentials-file: /Users/narahari/Documents/codebase/sand-bookings/one-api/bf9160ba-e058-4e95-96f2-632978d7726a.json
+
+ingress:
+- hostname: reader.hariworks.in
+  service: http://localhost:8080
+- service: http_status:404

@@ -23,10 +23,8 @@ public class OcrUtils {
         Files.write(temp.toPath(), imageBytes);
 
         ITesseract tesseract = new Tesseract();
-//        // Set parent directory of tessdata, not tessdata itself!
-        tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR"); // NOT "C:\\Program Files\\Tesseract-OCR\\tessdata"
+        tesseract.setDatapath("/opt/homebrew/share/tessdata");
         tesseract.setLanguage("eng");
-        System.out.println(new File("C:\\Program Files\\Tesseract-OCR\\tessdata\\eng.traineddata").exists());
 
 
         try {

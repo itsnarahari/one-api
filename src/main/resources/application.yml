@@ -1,0 +1,5 @@
+# src/main/resources/application.yml
+ocr:
+  tessdata-dir: /opt/homebrew/share/tessdata
+  jna-lib-path: /opt/homebrew/lib
+  lang: eng   # or eng+tel

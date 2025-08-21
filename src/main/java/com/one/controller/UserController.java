@@ -46,7 +46,7 @@ public class UserController {
     @PostMapping("/ocr")
     public ResponseEntity<String> extractText(@RequestBody Map<String, String> body) throws IOException {
         String base64 = body.get("image");
-        return ResponseEntity.ok(OcrUtils.extractTextFromBase64(base64));
+        return ResponseEntity.ok(userService.extractFromBase64(base64));
     }
 
     @GetMapping("/otp/clear")
